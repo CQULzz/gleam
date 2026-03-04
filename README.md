@@ -25,6 +25,8 @@
 
 ## Installation
 
+Recommended:
+
 ```bash
 bash gleam_lab/scripts/setup_gleam_lab_env.sh gleam_lab
 conda activate gleam_lab
@@ -34,6 +36,18 @@ The setup script installs:
 - CUDA 12.8 PyTorch stack
 - Isaac Sim + Isaac Lab
 - `gleam_lab/requirements_lab.txt`
+
+If you install manually, root `requirements.txt` is now the Isaac Lab entrypoint:
+
+```bash
+pip install -r requirements.txt
+```
+
+Optional developer mode:
+
+```bash
+pip install -e . --no-deps
+```
 
 ## Dataset Layout
 

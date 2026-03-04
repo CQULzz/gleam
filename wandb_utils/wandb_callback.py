@@ -33,17 +33,24 @@ class WandbCallback(BaseCallback):
         model_save_freq: int = 0,
         gradient_save_freq: int = 0,
     ):
-        team_name = config["team_name"]
-        # PZH: Setup our key
+        config = config or {}
+        team_name = os.environ.get("WANDB_ENTITY", config.get("team_name"))
+        project_name = os.environ.get("WANDB_PROJECT", project_name)
+        if not team_name:
+            raise ValueError("WandbCallback requires `team_name` or env var `WANDB_ENTITY`.")
+
+        # Setup key: env var has priority, key file is fallback.
         WANDB_ENV_VAR = "WANDB_API_KEY"
-        key_file_path = get_api_key_file(
-            "wandb_lqy_key_file.text" if team_name == "lqy0057" else None
-        )  # Search ~/wandb_api_key_file.txt first, then use PZH's
-        with open(key_file_path, "r") as f:
-            key = f.readline()
-        key = key.replace("\n", "")
-        key = key.replace(" ", "")
-        os.environ[WANDB_ENV_VAR] = key
+        key = os.environ.get(WANDB_ENV_VAR, "").replace("\n", "").replace(" ", "")
+        if not key:
+            key_file_path = get_api_key_file(
+                "wandb_lqy_key_file.text" if team_name == "lqy0057" else None
+            )  # Search repo key file first, then optional team-specific fallback.
+            with open(key_file_path, "r") as f:
+                key = f.readline()
+            key = key.replace("\n", "").replace(" ", "")
+            if key:
+                os.environ[WANDB_ENV_VAR] = key
 
         self.run = wandb.init(
             id=trial_name,

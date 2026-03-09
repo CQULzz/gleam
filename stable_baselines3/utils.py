@@ -1,8 +1,22 @@
 import os
 import datetime
-from legged_gym.env.base.base_task import BaseTask
+
 from legged_gym import OPEN_ROBOT_ROOT_DIR
-from gleam.wrapper.env_wrapper_gleam import EnvWrapperGLEAM
+
+try:
+    from legged_gym.env.base.base_task import BaseTask
+except Exception:  # pragma: no cover - optional in Isaac Lab migration runtime
+    BaseTask = None
+
+try:
+    from gleam.wrapper.env_wrapper_gleam import EnvWrapperGLEAM
+except Exception:  # pragma: no cover - optional in Isaac Lab migration runtime
+    EnvWrapperGLEAM = None
+
+try:
+    from gleam_lab.wrapper.env_wrapper_gleam_lab import EnvWrapperGLEAMLab
+except Exception:  # pragma: no cover - optional in Isaac Lab migration runtime
+    EnvWrapperGLEAMLab = None
 
 
 root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -22,8 +36,7 @@ def get_time_str():
 
 def is_isaac_gym_env(env):
     Isacc_Gym_Env = [
-        BaseTask, 
-        EnvWrapperGLEAM,
+        cls for cls in (BaseTask, EnvWrapperGLEAM, EnvWrapperGLEAMLab) if isinstance(cls, type)
     ]
 
     for target_env in Isacc_Gym_Env:

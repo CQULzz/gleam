@@ -1,5 +1,4 @@
 """Abstract base classes for RL algorithms."""
-from legged_gym.env.base.base_task import BaseTask
 import io
 import pathlib
 import time

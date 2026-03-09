@@ -29,8 +29,9 @@
 2. [Dataset](#-dataset)
 3. [Installation](#-installation)
 4. [Training & Evaluation](#-training-evaluation)
-5. [Citation](#-citation)
-6. [License](#-license)
+5. [Isaac Lab Migration](#-isaac-lab-migration)
+6. [Citation](#-citation)
+7. [License](#-license)
 
 
 ## 🏠 About
@@ -122,6 +123,58 @@ pip install -e .
 ```
 
 
+## 🔁 Isaac Lab Migration
+
+This repository now contains two execution paths:
+
+1. **Original upstream path (`gleam/`)**
+- This is the official Isaac Gym implementation from the upstream project.
+- It still targets the original stack described above: Python 3.8 + Isaac Gym + PyTorch 2.0.
+
+2. **Migrated Isaac Lab path (`gleam_lab/`)**
+- This is the actively maintained path for modern NVIDIA stacks.
+- It keeps the original Stage-1 training logic as much as possible:
+  - online multi-camera depth sensing
+  - occupancy / frontier update
+  - original reward / termination structure
+  - original PPO / encoder / policy path
+  - original CUDA BFS path (`bfs_cuda_2D`)
+- It is intended for GPUs that cannot run the legacy Isaac Gym stack cleanly.
+
+### Upstream Reference
+
+The original upstream project is:
+
+- https://github.com/zjwzcx/GLEAM
+
+This repository keeps the upstream `gleam/` codebase and adds an Isaac Lab migration under `gleam_lab/`.
+
+### Tested Isaac Lab Environment
+
+The migrated path has been tested with:
+
+- Ubuntu 24.04
+- Python 3.11
+- Isaac Lab 2.3.2
+- Isaac Sim 5.1.0.0
+- PyTorch 2.7.0 + CUDA 12.8
+- TorchVision 0.22.0
+- TorchAudio 2.7.0
+
+Recommended environment name:
+
+```bash
+conda activate gleam_lab_clean
+```
+
+### Notes on Current Scope
+
+- The migrated path currently focuses on **Stage 1 training**.
+- `gleam_lab/` should be used on modern RTX GPUs where the original Isaac Gym stack is not practical.
+- The migration does **not** use the earlier mock / reveal-disk shortcut environment.
+- It keeps the online depth-sensing exploration pipeline and restores the original CUDA BFS extension.
+
+
 ## 🕹️ Training & Evaluation
 
 [Weights & Bias](https://wandb.ai/site/) (wandb) is highly recommended for analyzing the training logs. If you want to use wandb in our codebase, please paste your wandb API key into `wandb_utils/wandb_api_key_file.txt`. If you don't want to use wandb, please add `--stop_wandb` into the following command. 
@@ -161,6 +214,38 @@ Please run the following command to evaluate the generalization performance of G
 python gleam/test/test_gleam_gleambench.py --sim_device=cuda:0 --num_envs=32 --headless --stop_wandb --ckpt_path=${YOUR_CKPT_PATH}$
 ```
 
+### Training with Isaac Lab
+
+For the migrated Isaac Lab path, use:
+
+```bash
+python -m gleam_lab.train.train_stage1_lab --headless --stop_wandb --sim_device cuda:0
+```
+
+For faster bring-up and debugging, start with a reduced scene count:
+
+```bash
+python -m gleam_lab.train.train_stage1_lab \
+  --headless \
+  --stop_wandb \
+  --sim_device cuda:0 \
+  --num_envs 4 \
+  --num_scene_override 16
+```
+
+A practical medium-scale run is:
+
+```bash
+python -m gleam_lab.train.train_stage1_lab \
+  --headless \
+  --stop_wandb \
+  --sim_device cuda:0 \
+  --num_envs 8 \
+  --num_scene_override 64
+```
+
+These migrated commands write logs into `runs_lab/`.
+
 
 ### Main Results
 
@@ -182,6 +267,9 @@ python gleam/test/test_gleam_gleambench.py --sim_device=cuda:0 --num_envs=32 --h
 
 **Q: Is it normal that the program gets stuck for about 5-60 minutes during training and testing?**  
    A: This is normal because the simulation environment needs to load 1024 complex 3D scenes (for training) or 128 complex 3D scenes (for evaluation) at once, which is very time-consuming. For initial use, it is recommended to modify the hardcoded parameters ([number of training scenes for stage1](https://github.com/zjwzcx/GLEAM/blob/a58cc8d713f5ebc29877eadcc82b51e7ad175c44/gleam/env/env_gleam_stage1.py#L33) and [number of evaluation scenes](https://github.com/zjwzcx/GLEAM/blob/a58cc8d713f5ebc29877eadcc82b51e7ad175c44/gleam/env/env_gleam_eval.py#L37)) to reduce the number of loaded scenes for a quick run-through.
+
+**Q: Which path should I use on a modern RTX 50-series GPU?**  
+   A: Prefer `gleam_lab/`. The legacy `gleam/` path depends on the original Isaac Gym stack and older Python / PyTorch versions. The migrated `gleam_lab/` path is intended for Isaac Lab + Isaac Sim + modern CUDA stacks.
 
 **Q: Is it normal that the 3D scenes in the visualization UI have no textures?**  
    A: This is normal. Textures have been removed from the preprocessed data to speed up simulation and rendering, as RGB/texture information is not required for geometry-level exploration. It's a trade-off to accelerate training, allowing focus on 3D spatial exploration. If you need scenes with textures, we recommend downloading the raw version of GLEAM-Bench. Please refer to the [guide](https://github.com/zjwzcx/GLEAM/blob/master/data_gleam/README.md) for more details.

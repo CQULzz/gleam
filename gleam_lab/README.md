@@ -1,6 +1,6 @@
 # GLEAM Lab Migration
 
-This folder contains the migration entrypoint for running Stage-1 training on modern GPUs (e.g. `sm_120`) with a new PyTorch/CUDA stack.
+This folder currently contains the completed and validated Stage1 migration path for running GLEAM on modern GPUs (e.g. `sm_120`) with a new PyTorch/CUDA stack.
 
 ## Quick Start
 
@@ -50,7 +50,8 @@ python -m gleam_lab.train.train_stage2_lab \
 
 - `--ckpt_path` is required for Stage2.
 - Stage2 entry keeps the same PPO stack/CLI semantics as Stage1 migration path.
-- Current Stage2 migration still uses the tensorized mock env scaffold in `gleam_lab/env/stage2_lab_env.py`.
+- Current Stage2 migration is not completed or validated yet.
+- Do not treat Stage2 as a finished migration target.
 
 ## Benchmark-Style Eval
 
@@ -67,7 +68,12 @@ python -m gleam_lab.test.test_gleam_gleambench_lab \
 
 - This CLI mirrors the original `test_gleam_gleambench.py` argument style.
 - Results are written to `runs_lab/eval_gleam_gleambench_lab_*/eval_summary.json`.
-- This is currently a migration evaluator on the Stage2 mock scaffold, not the legacy Isaac Gym `eval_128` benchmark implementation.
+- This evaluator is not yet a completed or validated replacement for the legacy Isaac Gym `eval_128` benchmark implementation.
+
+## Current Scope
+
+- Completed and validated: Stage1 migration
+- Not completed / not validated yet: Stage2 migration, benchmark-style evaluator
 
 ## Notes
 

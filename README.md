@@ -21,7 +21,7 @@ This fork has two code paths:
 
 2. `gleam_lab/`
 - Active migration path for modern stacks.
-- Current focus is Stage1 training.
+- Only Stage1 has been completed and validated at this time.
 - Keeps the original Stage1 logic as closely as practical:
   - online multi-camera depth sensing
   - occupancy / frontier update
@@ -87,6 +87,8 @@ For the original `gleam/` path, follow the upstream environment instructions fro
 
 ### Stage1 on Isaac Lab
 
+This is the only migrated path that is currently completed and validated.
+
 Validated commands:
 
 ```bash
@@ -119,11 +121,12 @@ python gleam/train/train_gleam_stage1.py --sim_device=cuda:0 --num_envs=32 --hea
 
 ### Stage2
 
-The migrated `train_stage2_lab.py` is included, but Stage1 is the currently validated path.
+- `train_stage2_lab.py` exists in the repository, but Stage2 has not been completed or validated in the Isaac Lab migration path.
+- Do not treat Stage2 as a finished migration target yet.
 
 ## Evaluation
 
-The migrated evaluator is available at:
+The migrated evaluator entry exists in the repository:
 
 ```bash
 python -m gleam_lab.test.test_gleam_gleambench_lab \
@@ -137,6 +140,11 @@ Outputs:
 
 - `runs_lab/eval_gleam_gleambench_lab_*/eval_summary.json`
 - `runs_lab/eval_gleam_gleambench_lab_*/eval_episode_metrics.npz`
+
+Current status:
+
+- The repository currently only guarantees a completed and validated Stage1 migration path.
+- Stage2 and the migrated evaluator are still unfinished / unvalidated and should be treated as work in progress.
 
 ## Notes
 

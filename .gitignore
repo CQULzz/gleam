@@ -56,6 +56,7 @@ Thumbs.db
 # logs
 logs
 runs
+runs_lab
 
 # other
 *.egg-info
@@ -123,3 +124,6 @@ venv/*
 
 # module
 ckpt
+
+# WandB secrets
+wandb_utils/wandb_api_key_file.txt

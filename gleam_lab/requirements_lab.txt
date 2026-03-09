@@ -1,0 +1,11 @@
+gym==0.26.2
+numpy==1.26.0
+matplotlib
+tensorboard
+cloudpickle
+pandas==2.2.3
+scipy
+pyyaml
+yapf==0.30.0
+wandb==0.25.0
+opencv-python==4.11.0.86

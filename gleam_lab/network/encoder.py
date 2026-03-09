@@ -4,8 +4,8 @@ from typing import List, Tuple
 
 import gym
 import torch as th
-from gleam.network.base import LocoTransformerEncoder_Map
-from gleam.network.locotransformer import LocoTransformer_GLEAM
+from gleam_lab.network.base import LocoTransformerEncoder_Map
+from gleam_lab.network.locotransformer import LocoTransformer_GLEAM
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 
 
